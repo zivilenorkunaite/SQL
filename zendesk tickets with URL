@@ -1,0 +1,22 @@
+SELECT
+	t.assignee_id ,
+	u.name,
+	count(1) as tickets,
+	sum(case when t.organization_id IS null then 0 else 1 end) as 
+	with_organization,
+	sum(case when o.vend_url IS null then 0 else 1 end ) as with_URL
+FROM
+	staging.dbo.v_zendesk_tickets t
+		INNER JOIN
+		staging.dbo.zendesk_users u
+		ON
+		t.assignee_id = u.id
+		INNER JOIN
+		staging.dbo.v_zendesk_organization o
+		ON
+		t.organization_id = o.id
+WHERE
+	t.created_at >= '2015-02-01'
+GROUP BY
+	t.assignee_id ,
+	u.name
